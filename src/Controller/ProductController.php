@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use symfony\component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Filesystem;
 
 final class ProductController extends AbstractController
 {
@@ -28,7 +28,6 @@ final class ProductController extends AbstractController
     #[Route('/product', name: 'product_list')]
     public function index(): Response
     {
-      
         $products = $this->productRepository->findAll();
 
         return $this->render('product/index.html.twig', [
@@ -50,22 +49,17 @@ final class ProductController extends AbstractController
 
             if ($image) {
                 $imageName = time() . '_' . $image->getClientOriginalName();
-
                 $image->move(
                     $this->getParameter('image_directory'),
                     $imageName
                 );
-
                 $product->setImage($imageName);
             }
 
             $this->entityManager->persist($product);
             $this->entityManager->flush();
 
-            $this->addFlash(
-                'success',
-                'Your product was saved successfully.'
-            );
+            $this->addFlash('success', 'Your product was saved successfully.');
 
             return $this->redirectToRoute('product_list');
         }
@@ -74,22 +68,18 @@ final class ProductController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-     #[Route('/product/details/{id}', name: 'product_show')]
-    public function show(Product $product): Response
-    {
 
-
-        return $this->render('product/show.html.twig', [
-            'products' => $product,
-        ]);
-    
+   #[Route('/product/details/{id}', name: 'product_show')]
+public function show(Product $product): Response
+{
+    return $this->render('product/show.html.twig', [
+        'product' => $product,
+    ]);
 }
-#[Route('/product/edit/{id}', name: 'product_edit')]
-    public function editproduct(Product $product,Request $request): Response
+
+    #[Route('/product/edit/{id}', name: 'product_edit')]
+    public function editproduct(Product $product, Request $request): Response
     {
-
-    
-
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
@@ -99,46 +89,41 @@ final class ProductController extends AbstractController
 
             if ($image) {
                 $imageName = time() . '_' . $image->getClientOriginalName();
-
                 $image->move(
                     $this->getParameter('image_directory'),
                     $imageName
                 );
-
                 $product->setImage($imageName);
             }
 
             $this->entityManager->persist($product);
             $this->entityManager->flush();
 
-            $this->addFlash(
-                'success',
-                'Your product updated.'
-            );
+            $this->addFlash('success', 'Your product updated.');
 
             return $this->redirectToRoute('product_list');
         }
 
-        return $this->render('product/e.html.twig', [
+        return $this->render('product/edit.html.twig', [
             'form' => $form->createView(),
         ]);
     }
+
     #[Route('/product/delete/{id}', name: 'product_delete')]
     public function delete(Product $product): Response
     {
         $filesystem = new Filesystem();
-        $imagePath = '.uploads/'.$product->getImage();
-        if($filesystem->exists($imagePath)){
+        $imagePath = $this->getParameter('kernel.project_dir') . '/public/uploads/' . $product->getImage();
+
+        if ($filesystem->exists($imagePath)) {
             $filesystem->remove($imagePath);
         }
+
         $this->entityManager->remove($product);
-            $this->entityManager->flush();
-              $this->addFlash(
-                'success',
-                'Your product removed.'
-            );
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Your product removed.');
 
         return $this->redirectToRoute('product_list');
-}
-
+    }
 }

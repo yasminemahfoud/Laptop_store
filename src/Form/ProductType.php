@@ -22,7 +22,9 @@ class ProductType extends AbstractType
             ->add('price')
             ->add('quantity')
             ->add('image',FileType::class,[
-                'required' => false
+                'required' => false,
+                 'mapped' => false,
+                
             ])
             ->add('category', EntityType::class, [
                 'class' => Category::class,
