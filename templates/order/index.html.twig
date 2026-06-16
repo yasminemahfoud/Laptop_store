@@ -1,20 +1,95 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello OrderController!{% endblock %}
+{% block title %}Orders List{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="row my-5">
+    <div class="col-md-10 mx-auto">
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/dell/Desktop/laptop store/laptop_store/src/Controller/OrderController.php</code></li>
-        <li>Your template at <code>C:/Users/dell/Desktop/laptop store/laptop_store/templates/order/index.html.twig</code></li>
-    </ul>
+        <div class="card">
+            <div class="card-header">
+                Orders List
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product Name</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ order.pname }}</td>
+                                <td>{{ order.price }} DH</td>
+
+                                <td>
+                                    <div class="dropdown">
+                                        <a class="btn btn-secondary dropdown-toggle"
+                                           href="#"
+                                           role="button"
+                                           data-bs-toggle="dropdown"
+                                           aria-expanded="false">
+                                            {{ order.status }}
+                                        </a>
+
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item"
+                                                   href="{{ path('order_status_update', {order: order.id, status: 'Shipped'}) }}">
+                                                    Shipped
+                                                </a>
+                                            </li>
+
+                                            <li>
+                                                <a class="dropdown-item"
+                                                   href="{{ path('order_status_update', {order: order.id, status: 'Rejected'}) }}">
+                                                    Rejected
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td>
+                                    <form id="{{ order.id }}"
+      action="{{ path('order_delete', {order: order.id}) }}"
+      method="post">
+
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ order.id) }}">
+</form>
+
+<button onclick="deleteItem('{{order.id }}')"
+        class="btn btn-sm btn-danger">
+    delete
+</button>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center">
+                                    No orders found.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+    </div>
 </div>
 {% endblock %}
