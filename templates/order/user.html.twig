@@ -11,6 +11,11 @@
           {{ message }}
         </div>
       {% endfor %}
+        {% for message in app.flashes('warning') %}
+        <div class="alert alert-warning">
+          {{ message }}
+        </div>
+      {% endfor %}
 
       <div class="card">
         <div class="card-header">
@@ -41,7 +46,7 @@
             {{ order.status }}
         </span>
 
-    {% elseif order.status == 'shipped' %}
+    {% elseif order.status == 'Shipped' %}
         <span class="badge bg-success p-2">
             {{ order.status }}
         </span>

@@ -24,11 +24,12 @@ final class OrderController extends AbstractController
     
         
     
-     #[Route('/order', name: 'order')]
+     #[Route('/orders', name: 'orders_list')]
     public function index(): Response
     {
+        $orders = $this->orderRepository->findAll();
         return $this->render('order/index.html.twig', [
-            'controller_name' => 'OrderController',
+            'orders' => $orders,
         ]);
     }
     #[Route('/user/orders', name: 'user_order_list')]
@@ -47,6 +48,17 @@ final class OrderController extends AbstractController
         if(!$this->getUser()){
           return $this->redirectToRoute('app_login');
         }
+        $orderExists = $this->orderRepository->findBy([
+            'user' => $this->getUser(),
+            'pname' => $product->getName()
+        ]);
+        if($orderExists){
+            $this->addFlash('warning', 'Your have already ordered this product.');
+            return $this->redirectToRoute('user_order_list');
+
+            
+        }
+
         $order = new Order();
         $order->setPname($product->getName());
         $order->setPrice($product->getPrice());
@@ -60,7 +72,26 @@ final class OrderController extends AbstractController
 
             return $this->redirectToRoute('user_order_list');
         }
+        
+         #[Route('/update/order/{order}/{status}', name: 'order_status_update')]
+public function updateOrderStatus(Order $order, string $status): Response
+{
+    $order->setStatus($status);
 
-      
-    }
+    $this->entityManager->flush();
 
+    $this->addFlash('success', 'Your order status was updated.');
+
+    return $this->redirectToRoute('orders_list');
+}
+#[Route('/delete/order/{order}', name: 'order_delete', methods: ['POST'])]
+public function deleteOrder(Order $order): Response
+{
+    $this->entityManager->remove($order);
+    $this->entityManager->flush();
+
+    $this->addFlash('success', 'Your order was deleted.');
+
+    return $this->redirectToRoute('orders_list');
+}
+}
