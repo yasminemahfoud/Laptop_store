@@ -20,7 +20,7 @@
         <div class="mb-3">
             You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
         </div>
-    {% endif %}
+    {% else %}
 
     <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
     <label for="inputUsername">Username</label>
@@ -38,6 +38,7 @@
     <button class="btn btn-lg btn-primary" type="submit">
         Sign in
     </button>
+    {% endif %}
        </form>
 </div>   
         </div>
