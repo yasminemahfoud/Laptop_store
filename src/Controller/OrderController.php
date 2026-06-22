@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\Persistence\ManagerRegistry;
-
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class OrderController extends AbstractController
 {
     private OrderRepository $orderRepository;
@@ -25,6 +25,7 @@ final class OrderController extends AbstractController
         
     
      #[Route('/orders', name: 'orders_list')]
+     #[IsGranted('ROLE_ADMIN', statusCode: 404, message: 'Page not found')]
     public function index(): Response
     {
         $orders = $this->orderRepository->findAll();
@@ -74,6 +75,7 @@ final class OrderController extends AbstractController
         }
         
          #[Route('/update/order/{order}/{status}', name: 'order_status_update')]
+         #[IsGranted('ROLE_ADMIN', statusCode: 404, message: 'Page not found')]
 public function updateOrderStatus(Order $order, string $status): Response
 {
     $order->setStatus($status);
@@ -85,6 +87,7 @@ public function updateOrderStatus(Order $order, string $status): Response
     return $this->redirectToRoute('orders_list');
 }
 #[Route('/delete/order/{order}', name: 'order_delete', methods: ['POST'])]
+#[IsGranted('ROLE_ADMIN', statusCode: 404, message: 'Page not found')]
 public function deleteOrder(Order $order): Response
 {
     $this->entityManager->remove($order);
