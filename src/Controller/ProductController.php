@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class ProductController extends AbstractController
 {
@@ -26,6 +27,7 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/product', name: 'product_list')]
+   #[IsGranted('ROLE_ADMIN', statusCode: 404, message: 'Page not found')]
     public function index(): Response
     {
         $products = $this->productRepository->findAll();
@@ -36,6 +38,7 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/store/product', name: 'product_store')]
+    #[IsGranted('ROLE_ADMIN', statusCode: 404, message: 'Page not found')]
     public function store(Request $request): Response
     {
         $product = new Product();
@@ -78,6 +81,7 @@ public function show(Product $product): Response
 }
 
     #[Route('/product/edit/{id}', name: 'product_edit')]
+    #[IsGranted('ROLE_ADMIN', statusCode: 404, message: 'Page not found')]
     public function editproduct(Product $product, Request $request): Response
     {
         $form = $this->createForm(ProductType::class, $product);
@@ -110,6 +114,7 @@ public function show(Product $product): Response
     }
 
     #[Route('/product/delete/{id}', name: 'product_delete')]
+    #[IsGranted('ROLE_ADMIN', statusCode: 404, message: 'Page not found')]
     public function delete(Product $product): Response
     {
         $filesystem = new Filesystem();
